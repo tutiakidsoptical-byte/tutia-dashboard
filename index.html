@@ -3,395 +3,626 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>توتيا — داشبورد الإعلانات الذكي</title>
+<title>توتيا — نظام استخبارات المنافسين</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
-  :root {
-    --purple: #5C4AB7;
-    --purple-light: #7B68D4;
-    --purple-pale: #EEEBfb;
-    --green: #1D9E75;
-    --green-light: #2DC993;
-    --green-pale: #E1F5EE;
-    --amber: #F59E0B;
-    --amber-pale: #FEF3C7;
-    --red: #EF4444;
-    --red-pale: #FEE2E2;
-    --gray-50: #F8F7FF;
-    --gray-100: #F1EFF9;
-    --gray-200: #E2DFEF;
-    --gray-600: #6B7280;
-    --gray-900: #1F1535;
-    --white: #FFFFFF;
-    --shadow: 0 1px 3px rgba(92,74,183,0.08), 0 4px 16px rgba(92,74,183,0.06);
-    --shadow-lg: 0 8px 32px rgba(92,74,183,0.12);
-  }
+:root {
+  --ink: #0D0D0F;
+  --ink2: #3A3A42;
+  --ink3: #7A7A85;
+  --ink4: #B8B8C0;
+  --surface: #F5F5F7;
+  --surface2: #EBEBEE;
+  --white: #FFFFFF;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.14);
+  --google: #4285F4;
+  --meta: #0866FF;
+  --tiktok: #010101;
+  --snap: #FFFC00;
+  --snap-dark: #C8C800;
+  --accent: #5C3CEB;
+  --accent2: #8B6FFF;
+  --success: #16A34A;
+  --warn: #D97706;
+  --danger: #DC2626;
+  --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.1);
+}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html { font-size: 14px; }
+body {
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+}
 
-  body {
-    font-family: 'Cairo', sans-serif;
-    background: var(--gray-50);
-    color: var(--gray-900);
-    min-height: 100vh;
-  }
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  min-height: 100vh;
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 100;
+}
 
-  /* ===== SIDEBAR ===== */
-  .sidebar {
-    position: fixed; top: 0; right: 0;
-    width: 240px; height: 100vh;
-    background: var(--purple);
-    display: flex; flex-direction: column;
-    z-index: 100;
-    box-shadow: -4px 0 24px rgba(92,74,183,0.3);
-  }
+.brand {
+  padding: 24px 20px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.brand-name { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+.brand-tag {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--ink);
+  background: #FFFC00;
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+}
 
-  .sidebar-logo {
-    padding: 28px 24px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-  }
+.nav { padding: 12px 10px; flex: 1; overflow-y: auto; }
+.nav-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 10px 10px 5px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.55);
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  margin-bottom: 1px;
+  transition: all 0.15s;
+}
+.nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+.nav-item.active { background: rgba(255,255,255,0.12); color: #fff; font-weight: 500; }
+.nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
 
-  .logo-name {
-    font-size: 18px; font-weight: 900;
-    color: #fff; line-height: 1.2;
-  }
+.platform-dots {
+  display: flex;
+  gap: 5px;
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.pdot {
+  width: 8px; height: 8px; border-radius: 50%;
+  position: relative;
+}
+.pdot::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  transition: all 0.2s;
+}
+.pdot.active::after { border-color: currentColor; }
+.pdot.g { background: var(--google); color: var(--google); }
+.pdot.m { background: var(--meta); color: var(--meta); }
+.pdot.t { background: #fff; color: #fff; }
+.pdot.s { background: var(--snap); color: var(--snap-dark); }
 
-  .logo-sub {
-    font-size: 11px; color: rgba(255,255,255,0.6);
-    margin-top: 2px; font-weight: 400;
-  }
+.last-update {
+  padding: 12px 20px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.25);
+  font-family: 'IBM Plex Mono', monospace;
+}
 
-  .logo-badge {
-    display: inline-block;
-    background: var(--green);
-    color: #fff; font-size: 10px;
-    padding: 2px 8px; border-radius: 20px;
-    margin-top: 6px; font-weight: 600;
-  }
+/* ── MAIN ── */
+.main {
+  margin-right: 220px;
+  flex: 1;
+  min-height: 100vh;
+}
 
-  .nav { padding: 16px 12px; flex: 1; }
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; }
+.page-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+.page-sub { font-size: 11px; color: var(--ink3); }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
 
-  .nav-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px; border-radius: 10px;
-    color: rgba(255,255,255,0.65);
-    font-size: 13px; font-weight: 500;
-    cursor: pointer; margin-bottom: 4px;
-    transition: all 0.2s;
-  }
+/* Platform filter pills */
+.pf-bar { display: flex; gap: 6px; }
+.pf-pill {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all 0.15s;
+  background: var(--surface);
+  color: var(--ink3);
+}
+.pf-pill.active { border-color: currentColor; color: var(--ink); }
+.pf-pill.all.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.pf-pill.g.active { color: var(--google); background: #EEF3FE; }
+.pf-pill.m.active { color: var(--meta); background: #EEF3FE; }
+.pf-pill.t.active { color: var(--ink); background: var(--surface2); }
+.pf-pill.s.active { color: var(--snap-dark); background: #FFFDE0; }
+.pf-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 
-  .nav-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
-  .nav-item.active { background: rgba(255,255,255,0.15); color: #fff; }
+.btn-refresh {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-refresh:hover { background: var(--accent2); }
+.btn-refresh.loading { opacity: 0.7; cursor: not-allowed; }
+.spin { display: inline-block; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+/* ── CONTENT ── */
+.content { padding: 24px 28px; }
+.page { display: none; }
+.page.active { display: block; }
 
-  .nav-section {
-    font-size: 10px; color: rgba(255,255,255,0.35);
-    font-weight: 600; letter-spacing: 0.08em;
-    padding: 12px 14px 6px; text-transform: uppercase;
-  }
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.card-hd {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-title { font-size: 13px; font-weight: 600; color: var(--ink); }
+.card-sub { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+.card-body { padding: 18px; }
 
-  .sidebar-footer {
-    padding: 16px; border-top: 1px solid rgba(255,255,255,0.1);
-  }
+/* ── OVERVIEW GRID ── */
+.ov-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 20px; }
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+}
+.stat-card.google::before { background: var(--google); }
+.stat-card.meta::before { background: var(--meta); }
+.stat-card.tiktok::before { background: var(--ink); }
+.stat-card.snap::before { background: var(--snap); }
+.stat-label { font-size: 10px; font-weight: 600; color: var(--ink3); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; }
+.stat-num { font-size: 28px; font-weight: 700; color: var(--ink); line-height: 1; }
+.stat-change { font-size: 11px; font-weight: 500; margin-top: 5px; }
+.stat-change.up { color: var(--success); }
+.stat-change.down { color: var(--danger); }
 
-  .live-badge {
-    display: flex; align-items: center; gap: 8px;
-    background: rgba(29,158,117,0.2);
-    border: 1px solid rgba(29,158,117,0.3);
-    border-radius: 8px; padding: 8px 12px;
-  }
+/* ── COMPETITOR TABLE ── */
+.comp-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-bottom: 20px; }
+.comp-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.comp-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+.comp-card-top {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.comp-name { font-size: 14px; font-weight: 600; }
+.danger-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+.danger-badge.high { background: #FEE2E2; color: #DC2626; }
+.danger-badge.mid { background: #FEF3C7; color: #D97706; }
+.danger-badge.low { background: #DCFCE7; color: #16A34A; }
+.comp-card-body { padding: 12px 16px; }
+.comp-stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.comp-stat-label { font-size: 11px; color: var(--ink3); }
+.comp-stat-val { font-size: 11px; font-weight: 600; color: var(--ink); }
+.platform-icons { display: flex; gap: 4px; margin-top: 10px; }
+.p-icon {
+  width: 22px; height: 22px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+}
+.p-icon.g { background: #EEF3FE; color: var(--google); }
+.p-icon.m { background: #EEF3FE; color: var(--meta); }
+.p-icon.t { background: var(--surface2); color: var(--ink); }
+.p-icon.s { background: #FFFDE0; color: var(--snap-dark); }
+.last-seen { font-size: 10px; color: var(--ink4); margin-top: 8px; font-family: 'IBM Plex Mono', monospace; }
 
-  .live-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--green-light);
-    animation: pulse 2s infinite;
-  }
+/* ── ADS TABLE ── */
+.ads-table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th {
+  text-align: right;
+  padding: 10px 14px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  background: var(--surface);
+}
+td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface); }
+.ad-headline { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 3px; line-height: 1.4; }
+.ad-desc { font-size: 11px; color: var(--ink3); line-height: 1.5; }
+.platform-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 600;
+  padding: 3px 8px; border-radius: 4px;
+}
+.platform-pill.g { background: #EEF3FE; color: var(--google); }
+.platform-pill.m { background: #EEF3FE; color: var(--meta); }
+.platform-pill.t { background: var(--surface2); color: var(--ink); }
+.platform-pill.s { background: #FFFDE0; color: var(--snap-dark); }
+.kw-pill {
+  display: inline-block;
+  font-size: 10px; font-weight: 500;
+  padding: 2px 7px; border-radius: 4px;
+  background: var(--surface2);
+  color: var(--ink2);
+  margin: 2px 2px 2px 0;
+}
+.ad-type-badge {
+  display: inline-block;
+  font-size: 9px; font-weight: 600;
+  padding: 2px 6px; border-radius: 3px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.ad-type-badge.search { background: #EEF3FE; color: var(--google); }
+.ad-type-badge.display { background: #F3E8FF; color: #7C3AED; }
+.ad-type-badge.video { background: #FEE2E2; color: #DC2626; }
+.ad-type-badge.story { background: #FFFDE0; color: var(--snap-dark); }
+.ad-type-badge.feed { background: #DCFCE7; color: #16A34A; }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.3); }
-  }
+/* ── KEYWORDS PAGE ── */
+.kw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.kw-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.kw-row:last-child { border-bottom: none; }
+.kw-word { font-size: 13px; font-weight: 500; color: var(--ink); }
+.kw-meta { display: flex; align-items: center; gap: 10px; }
+.kw-comp-count { font-size: 11px; color: var(--ink3); }
+.kw-bar-wrap { width: 80px; height: 4px; background: var(--surface2); border-radius: 2px; }
+.kw-bar-fill { height: 100%; border-radius: 2px; }
+.kw-bar-fill.high { background: var(--danger); }
+.kw-bar-fill.mid { background: var(--warn); }
+.kw-bar-fill.low { background: var(--success); }
+.opportunity-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 600;
+  padding: 2px 7px; border-radius: 4px;
+  background: #DCFCE7; color: #16A34A;
+}
 
-  .live-text { font-size: 11px; color: var(--green-light); font-weight: 600; }
+/* ── ANALYSIS PAGE ── */
+.analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.insight-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+.insight-platform {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+}
+.insight-platform-dot { width: 8px; height: 8px; border-radius: 50%; }
+.insight-platform-name { font-size: 12px; font-weight: 600; color: var(--ink); }
+.insight-body { font-size: 12px; color: var(--ink2); line-height: 1.7; }
+.insight-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.insight-tag {
+  font-size: 10px; font-weight: 500;
+  padding: 2px 8px; border-radius: 4px;
+  background: var(--surface);
+  color: var(--ink3);
+  border: 1px solid var(--border);
+}
 
-  /* ===== MAIN ===== */
-  .main {
-    margin-right: 240px;
-    min-height: 100vh;
-  }
+/* ── PROPOSAL PAGE ── */
+.proposal-header {
+  background: var(--ink);
+  border-radius: 12px;
+  padding: 22px 24px;
+  margin-bottom: 20px;
+  color: #fff;
+}
+.proposal-title { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+.proposal-sub { font-size: 12px; color: rgba(255,255,255,0.55); }
+.proposal-platforms { display: flex; gap: 8px; margin-top: 14px; }
+.prop-platform {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 11px; font-weight: 600;
+  color: #fff;
+}
+.proposal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.proposal-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.proposal-card-hd {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.proposal-card-body { padding: 14px 16px; }
+.hl-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.hl-item:last-child { border-bottom: none; }
+.hl-num { font-size: 10px; font-weight: 600; color: var(--ink4); min-width: 24px; font-family: 'IBM Plex Mono', monospace; }
+.hl-text { font-size: 12px; font-weight: 500; color: var(--ink); flex: 1; line-height: 1.4; }
+.hl-chars { font-size: 10px; font-weight: 600; color: var(--success); white-space: nowrap; }
+.copy-btn {
+  background: none;
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  padding: 3px 8px;
+  font-size: 10px;
+  cursor: pointer;
+  color: var(--ink3);
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  white-space: nowrap;
+}
+.copy-btn:hover { background: var(--surface); color: var(--ink); }
+.budget-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.budget-row:last-child { border-bottom: none; }
+.budget-platform { font-size: 12px; font-weight: 500; color: var(--ink); }
+.budget-amount { font-size: 13px; font-weight: 700; color: var(--ink); }
+.budget-pct { font-size: 10px; color: var(--ink3); margin-top: 1px; }
+.media-spec-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; }
+.media-spec {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--surface);
+}
+.media-spec-type { font-size: 10px; font-weight: 600; color: var(--ink3); margin-bottom: 4px; }
+.media-spec-val { font-size: 12px; font-weight: 600; color: var(--ink); font-family: 'IBM Plex Mono', monospace; }
+.export-bar { display: flex; gap: 10px; margin-top: 20px; }
+.btn-export {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+.btn-export.primary { background: var(--accent); color: #fff; }
+.btn-export.primary:hover { background: var(--accent2); }
+.btn-export.secondary { background: var(--white); color: var(--ink); border: 1px solid var(--border2); }
+.btn-export.secondary:hover { background: var(--surface); }
 
-  /* ===== TOPBAR ===== */
-  .topbar {
-    background: var(--white);
-    border-bottom: 1px solid var(--gray-200);
-    padding: 0 32px;
-    height: 64px;
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 50;
-  }
+/* ── AI CHAT ── */
+.ai-panel {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-top: 20px;
+}
+.ai-panel-hd {
+  padding: 12px 16px;
+  background: var(--ink);
+  color: #fff;
+  display: flex; align-items: center; gap: 8px;
+}
+.ai-panel-title { font-size: 12px; font-weight: 600; }
+.ai-panel-sub { font-size: 10px; color: rgba(255,255,255,0.5); margin-top:1px; }
+.ai-input-row {
+  display: flex; gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.ai-input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+  resize: none;
+  min-height: 60px;
+}
+.ai-input:focus { border-color: var(--accent); background: var(--white); }
+.ai-send {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 12px; font-weight: 600;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  cursor: pointer;
+  align-self: flex-end;
+}
+.ai-send:hover { background: var(--accent2); }
+.ai-send:disabled { opacity: 0.6; cursor: not-allowed; }
+.ai-messages { padding: 14px 16px; min-height: 100px; max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.ai-msg {
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12px;
+  line-height: 1.7;
+  max-width: 90%;
+}
+.ai-msg.user {
+  background: var(--accent);
+  color: #fff;
+  align-self: flex-start;
+  border-bottom-right-radius: 3px;
+}
+.ai-msg.bot {
+  background: var(--surface);
+  color: var(--ink);
+  align-self: flex-end;
+  border-bottom-left-radius: 3px;
+  white-space: pre-wrap;
+}
+.ai-msg.thinking {
+  background: var(--surface2);
+  color: var(--ink3);
+  font-style: italic;
+}
+.dots-anim span {
+  display: inline-block;
+  animation: blink 1.2s infinite;
+  font-size: 16px;
+}
+.dots-anim span:nth-child(2) { animation-delay: 0.2s; }
+.dots-anim span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%,80%,100% { opacity:0.2; } 40% { opacity:1; } }
 
-  .topbar-title { font-size: 16px; font-weight: 700; color: var(--gray-900); }
-  .topbar-sub { font-size: 12px; color: var(--gray-600); margin-top: 1px; }
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 20px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 500;
+  z-index: 999;
+  opacity: 0; transition: opacity 0.25s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; }
 
-  .topbar-actions { display: flex; align-items: center; gap: 12px; }
-
-  .date-pill {
-    background: var(--gray-100);
-    border: 1px solid var(--gray-200);
-    border-radius: 8px; padding: 6px 14px;
-    font-size: 12px; font-weight: 600;
-    color: var(--purple); cursor: pointer;
-  }
-
-  .btn-share {
-    background: var(--purple);
-    color: #fff; border: none;
-    border-radius: 8px; padding: 8px 18px;
-    font-size: 13px; font-weight: 600;
-    font-family: 'Cairo', sans-serif;
-    cursor: pointer;
-  }
-
-  /* ===== CONTENT ===== */
-  .content { padding: 28px 32px; }
-
-  /* ===== ALERT ===== */
-  .alert-bar {
-    background: linear-gradient(135deg, #FEF3C7, #FFFBEB);
-    border: 1px solid #FCD34D;
-    border-radius: 12px; padding: 14px 20px;
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 24px;
-  }
-
-  .alert-icon { font-size: 20px; }
-  .alert-text { font-size: 13px; font-weight: 600; color: #92400E; }
-  .alert-sub { font-size: 12px; color: #B45309; font-weight: 400; }
-
-  /* ===== SCORE CARDS ===== */
-  .score-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-
-  .score-card {
-    background: var(--white);
-    border-radius: 14px;
-    padding: 20px;
-    border: 1px solid var(--gray-200);
-    box-shadow: var(--shadow);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .score-card::before {
-    content: '';
-    position: absolute; top: 0; right: 0;
-    width: 4px; height: 100%;
-  }
-
-  .score-card.purple::before { background: var(--purple); }
-  .score-card.green::before { background: var(--green); }
-  .score-card.amber::before { background: var(--amber); }
-  .score-card.red::before { background: var(--red); }
-  .score-card.blue::before { background: #3B82F6; }
-
-  .score-label { font-size: 11px; font-weight: 600; color: var(--gray-600); margin-bottom: 8px; }
-  .score-value { font-size: 26px; font-weight: 900; color: var(--gray-900); line-height: 1; }
-  .score-unit { font-size: 13px; font-weight: 600; color: var(--gray-600); margin-right: 2px; }
-
-  .score-change {
-    display: inline-flex; align-items: center; gap: 3px;
-    font-size: 11px; font-weight: 700;
-    margin-top: 6px; padding: 2px 7px;
-    border-radius: 20px;
-  }
-
-  .score-change.up { background: var(--green-pale); color: var(--green); }
-  .score-change.down { background: var(--red-pale); color: var(--red); }
-  .score-change.neutral { background: var(--gray-100); color: var(--gray-600); }
-
-  /* ===== CHARTS ROW ===== */
-  .charts-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 20px;
-    margin-bottom: 24px;
-  }
-
-  .card {
-    background: var(--white);
-    border-radius: 14px;
-    border: 1px solid var(--gray-200);
-    box-shadow: var(--shadow);
-    overflow: hidden;
-  }
-
-  .card-header {
-    padding: 18px 22px 14px;
-    border-bottom: 1px solid var(--gray-200);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-
-  .card-title { font-size: 14px; font-weight: 700; color: var(--gray-900); }
-  .card-sub { font-size: 12px; color: var(--gray-600); margin-top: 2px; }
-
-  .card-body { padding: 20px 22px; }
-
-  .chart-wrap { position: relative; height: 220px; }
-
-  /* ===== TABLE ===== */
-  .table-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 24px;
-  }
-
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-
-  thead tr { border-bottom: 1px solid var(--gray-200); }
-
-  th {
-    text-align: right; padding: 10px 14px;
-    font-size: 11px; font-weight: 700;
-    color: var(--gray-600); letter-spacing: 0.04em;
-    white-space: nowrap;
-  }
-
-  td { padding: 11px 14px; border-bottom: 1px solid var(--gray-100); }
-
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--gray-50); }
-
-  .kw-text { font-weight: 600; color: var(--gray-900); }
-  .kw-match {
-    display: inline-block; font-size: 10px;
-    padding: 1px 6px; border-radius: 4px;
-    background: var(--purple-pale); color: var(--purple);
-    font-weight: 700; margin-right: 6px;
-  }
-
-  .ctr-bar-wrap { display: flex; align-items: center; gap: 8px; }
-  .ctr-bar { flex: 1; height: 4px; background: var(--gray-100); border-radius: 2px; }
-  .ctr-fill { height: 100%; border-radius: 2px; background: var(--green); }
-  .ctr-val { font-size: 12px; font-weight: 700; color: var(--green); min-width: 36px; text-align: left; }
-
-  .cost-val { font-weight: 600; color: var(--gray-900); }
-  .cost-unit { font-size: 10px; color: var(--gray-600); }
-
-  /* ===== COMPETITOR TABLE ===== */
-  .comp-card { margin-bottom: 24px; }
-
-  .comp-badge {
-    display: inline-block; font-size: 11px;
-    padding: 2px 10px; border-radius: 20px;
-    font-weight: 700;
-  }
-
-  .comp-badge.high { background: var(--red-pale); color: var(--red); }
-  .comp-badge.mid { background: var(--amber-pale); color: #92400E; }
-  .comp-badge.low { background: var(--green-pale); color: var(--green); }
-
-  .tag {
-    display: inline-block; font-size: 11px;
-    padding: 2px 8px; border-radius: 4px;
-    background: var(--gray-100); color: var(--gray-600);
-    margin: 1px; font-weight: 500;
-  }
-
-  /* ===== AI SECTION ===== */
-  .ai-card {
-    background: linear-gradient(135deg, var(--purple), var(--purple-light));
-    border-radius: 14px; padding: 24px;
-    color: #fff; margin-bottom: 24px;
-  }
-
-  .ai-title { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
-  .ai-sub { font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 20px; }
-
-  .ai-ads-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-
-  .ai-ad {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 10px; padding: 14px;
-  }
-
-  .ai-ad-tag {
-    font-size: 10px; color: rgba(255,255,255,0.6);
-    font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.06em; margin-bottom: 8px;
-  }
-
-  .ai-ad-h { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
-  .ai-ad-d { font-size: 11px; color: rgba(255,255,255,0.75); line-height: 1.5; }
-
-  /* ===== FOOTER ===== */
-  .footer {
-    text-align: center; padding: 20px 32px;
-    border-top: 1px solid var(--gray-200);
-    font-size: 11px; color: var(--gray-600);
-  }
-
-  /* ===== TABS ===== */
-  .page { display: none; }
-  .page.active { display: block; }
-
-  /* ===== RESPONSIVE ===== */
-  @media (max-width: 1200px) {
-    .score-grid { grid-template-columns: repeat(3, 1fr); }
-    .charts-grid { grid-template-columns: 1fr; }
-    .table-grid { grid-template-columns: 1fr; }
-    .ai-ads-grid { grid-template-columns: 1fr; }
-  }
+/* MISC */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; margin-bottom: 20px; }
+.mb-20 { margin-bottom: 20px; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.section-label { font-size: 11px; font-weight: 600; color: var(--ink3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
+.alert {
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 12px;
+  margin-bottom: 16px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.alert.warn { background: #FEF3C7; border: 1px solid #FDE68A; color: #92400E; }
+.alert.info { background: #EEF3FE; border: 1px solid #BFDBFE; color: #1E40AF; }
 </style>
 </head>
 <body>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-name">توتيا</div>
-    <div class="logo-sub">لبصريات الأطفال</div>
-    <div class="logo-badge">داشبورد ذكي</div>
+  <div class="brand">
+    <div class="brand-name">توتيا</div>
+    <div class="brand-tag">COMPETITOR INTEL</div>
   </div>
-
   <nav class="nav">
-    <div class="nav-section">الرئيسية</div>
-    <div class="nav-item active" onclick="showPage('overview')">
-      <span class="nav-icon">📊</span> نظرة عامة
+    <div class="nav-label">المراقبة</div>
+    <div class="nav-item active" id="nav-overview" onclick="goPage('overview',this)">
+      <span class="nav-icon">◉</span> لوحة المراقبة
     </div>
-    <div class="nav-item" onclick="showPage('keywords')">
-      <span class="nav-icon">🔑</span> الكلمات المفتاحية
+    <div class="nav-item" id="nav-ads" onclick="goPage('ads',this)">
+      <span class="nav-icon">▤</span> إعلانات المنافسين
     </div>
-    <div class="nav-item" onclick="showPage('competitors')">
-      <span class="nav-icon">🔍</span> المنافسون
+    <div class="nav-item" id="nav-keywords" onclick="goPage('keywords',this)">
+      <span class="nav-icon">◈</span> الكلمات المفتاحية
     </div>
-    <div class="nav-item" onclick="showPage('captions')">
-      <span class="nav-icon">✍️</span> مولّد الإعلانات
+    <div class="nav-label">التحليل</div>
+    <div class="nav-item" id="nav-analysis" onclick="goPage('analysis',this)">
+      <span class="nav-icon">◆</span> تحليل كلود
     </div>
-
-    <div class="nav-section">التقارير</div>
-    <div class="nav-item" onclick="showPage('overview')">
-      <span class="nav-icon">📈</span> الأداء الشهري
-    </div>
-    <div class="nav-item" onclick="showPage('overview')">
-      <span class="nav-icon">💰</span> الميزانية
+    <div class="nav-label">الإنتاج</div>
+    <div class="nav-item" id="nav-proposal" onclick="goPage('proposal',this)">
+      <span class="nav-icon">▶</span> مقترح حملة توتيا
     </div>
   </nav>
-
-  <div class="sidebar-footer">
-    <div class="live-badge">
-      <div class="live-dot"></div>
-      <div class="live-text">متصل بـ Google Ads</div>
-    </div>
+  <div class="platform-dots">
+    <div class="pdot g active" title="Google"></div>
+    <div class="pdot m active" title="Meta"></div>
+    <div class="pdot t active" title="TikTok"></div>
+    <div class="pdot s active" title="Snapchat"></div>
   </div>
+  <div class="last-update">آخر تحديث: 05/04/2026 08:14</div>
 </aside>
 
 <!-- MAIN -->
@@ -399,490 +630,865 @@
 
   <!-- TOPBAR -->
   <div class="topbar">
-    <div>
-      <div class="topbar-title" id="page-title">نظرة عامة على الأداء</div>
-      <div class="topbar-sub">آخر تحديث: اليوم 8:00 صباحاً</div>
+    <div class="topbar-left">
+      <div>
+        <div class="page-title" id="page-title">لوحة المراقبة</div>
+        <div class="page-sub">مراقبة 9 منافسين عبر 4 منصات</div>
+      </div>
     </div>
-    <div class="topbar-actions">
-      <div class="date-pill">8 مارس — 5 أبريل 2026</div>
-      <button class="btn-share" onclick="alert('تم نسخ رابط المشاركة!')">مشاركة مع الإدارة</button>
+    <div class="topbar-right">
+      <div class="pf-bar">
+        <div class="pf-pill all active" onclick="filterPlatform('all',this)">الكل</div>
+        <div class="pf-pill g" onclick="filterPlatform('google',this)"><div class="pf-dot" style="background:var(--google)"></div>Google</div>
+        <div class="pf-pill m" onclick="filterPlatform('meta',this)"><div class="pf-dot" style="background:var(--meta)"></div>Meta</div>
+        <div class="pf-pill t" onclick="filterPlatform('tiktok',this)"><div class="pf-dot" style="background:#000"></div>TikTok</div>
+        <div class="pf-pill s" onclick="filterPlatform('snap',this)"><div class="pf-dot" style="background:var(--snap-dark)"></div>Snap</div>
+      </div>
+      <button class="btn-refresh" id="refresh-btn" onclick="refreshData()">
+        <span id="refresh-icon">↻</span> تحديث البيانات
+      </button>
     </div>
   </div>
 
-  <!-- PAGE: OVERVIEW -->
+  <!-- ═══════════════ PAGE: OVERVIEW ═══════════════ -->
   <div class="page active" id="page-overview">
     <div class="content">
 
-      <!-- ALERT -->
-      <div class="alert-bar">
-        <span class="alert-icon">⚠️</span>
-        <div>
-          <div class="alert-text">تنبيه: كلمة "نظارات أطفال قبيله" CTR 18% — ارفع ميزانيتها فوراً</div>
-          <div class="alert-sub">كلمة "gucci نظارات" تستنزف الميزانية بدون تحويلات — تم إضافتها للكلمات السلبية تلقائياً</div>
+      <div class="alert warn">
+        <span style="font-size:16px">⚡</span>
+        <div><strong>تنبيه جديد:</strong> MAGRABi أطلق 3 إعلانات جديدة على Meta تستهدف كلمة "نظارات أطفال الرياض" منذ يومين — يؤثر مباشرة على توتيا.</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="ov-grid">
+        <div class="stat-card google">
+          <div class="stat-label">Google Ads</div>
+          <div class="stat-num" id="g-ads-count">47</div>
+          <div class="stat-change up">↑ 8 إعلان جديد هذا الأسبوع</div>
+        </div>
+        <div class="stat-card meta">
+          <div class="stat-label">Meta Ads</div>
+          <div class="stat-num" id="m-ads-count">63</div>
+          <div class="stat-change up">↑ 12 إعلان جديد</div>
+        </div>
+        <div class="stat-card tiktok">
+          <div class="stat-label">TikTok Ads</div>
+          <div class="stat-num" id="t-ads-count">28</div>
+          <div class="stat-change up">↑ 5 إعلان جديد</div>
+        </div>
+        <div class="stat-card snap">
+          <div class="stat-label">Snapchat Ads</div>
+          <div class="stat-num" id="s-ads-count">19</div>
+          <div class="stat-change down">↓ 2 إعلان أوقف</div>
         </div>
       </div>
 
-      <!-- SCORE CARDS -->
-      <div class="score-grid">
-        <div class="score-card purple">
-          <div class="score-label">إجمالي الإنفاق</div>
-          <div class="score-value"><span class="score-unit">ر.س</span>4,284</div>
-          <div class="score-change down">↓ 21.5% عن الشهر</div>
-        </div>
-        <div class="score-card green">
-          <div class="score-label">إجمالي النقرات</div>
-          <div class="score-value">65,168</div>
-          <div class="score-change down">↓ 4.7%</div>
-        </div>
-        <div class="score-card amber">
-          <div class="score-label">الظهورات</div>
-          <div class="score-value">1.85م</div>
-          <div class="score-change up">↑ 25%</div>
-        </div>
-        <div class="score-card blue">
-          <div class="score-label">متوسط CTR</div>
-          <div class="score-value">3.52<span style="font-size:16px">%</span></div>
-          <div class="score-change neutral">ممتاز</div>
-        </div>
-        <div class="score-card red">
-          <div class="score-label">التحويلات</div>
-          <div class="score-value">1,601</div>
-          <div class="score-change down">↓ 60.6%</div>
-        </div>
-      </div>
-
-      <!-- CHARTS -->
-      <div class="charts-grid">
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">أداء الحملات — النقرات والتكلفة</div>
-              <div class="card-sub">مارس — أبريل 2026</div>
+      <!-- Competitors -->
+      <div class="section-label">المنافسون المراقبون</div>
+      <div class="comp-grid">
+        <div class="comp-card" onclick="viewComp('magrabi')">
+          <div class="comp-card-top">
+            <div class="comp-name">MAGRABi</div>
+            <div class="danger-badge high">خطر عالي</div>
+          </div>
+          <div class="comp-card-body">
+            <div class="comp-stat-row"><span class="comp-stat-label">إعلانات نشطة</span><span class="comp-stat-val">24 إعلان</span></div>
+            <div class="comp-stat-row"><span class="comp-stat-label">آخر إعلان</span><span class="comp-stat-val" style="color:var(--danger)">منذ ساعتين</span></div>
+            <div class="comp-stat-row"><span class="comp-stat-label">ميزانية تقديرية</span><span class="comp-stat-val">عالية جداً</span></div>
+            <div class="platform-icons">
+              <div class="p-icon g">G</div>
+              <div class="p-icon m">M</div>
+              <div class="p-icon t">T</div>
+              <div class="p-icon s">S</div>
             </div>
-          </div>
-          <div class="card-body">
-            <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+            <div class="last-seen">آخر رصد: 05/04/2026 06:30</div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">توزيع الأجهزة</div>
-              <div class="card-sub">جوال / سطح مكتب / تابلت</div>
+        <div class="comp-card" onclick="viewComp('barakat')">
+          <div class="comp-card-top">
+            <div class="comp-name">البركات</div>
+            <div class="danger-badge high">خطر عالي</div>
+          </div>
+          <div class="comp-card-body">
+            <div class="comp-stat-row"><span class="comp-stat-label">إعلانات نشطة</span><span class="comp-stat-val">18 إعلان</span></div>
+            <div class="comp-stat-row"><span class="comp-stat-label">آخر إعلان</span><span class="comp-stat-val">منذ يوم</span></div>
+            <div class="comp-stat-row"><span class="comp-stat-label">ميزانية تقديرية</span><span class="comp-stat-val">متوسطة-عالية</span></div>
+            <div class="platform-icons">
+              <div class="p-icon g">G</div>
+              <div class="p-icon m">M</div>
             </div>
+            <div class="last-seen">آخر رصد: 05/04/2026 08:00</div>
           </div>
-          <div class="card-body">
-            <div class="chart-wrap"><canvas id="deviceChart"></canvas></div>
+        </div>
+
+        <div class="comp-card" onclick="viewComp('eyewa')">
+          <div class="comp-card-top">
+            <div class="comp-name">Eyewa أيوا</div>
+            <div class="danger-badge high">خطر عالي</div>
+          </div>
+          <div class="comp-card-body">
+            <div class="comp-stat-row"><span class="comp-stat-label">إعلانات نشطة</span><span class="comp-stat-val">31 إعلان</span></div>
+            <div class="comp-stat-row"><span class="comp-stat-label">آخر إعلان</span><span class="comp-stat-val" style="color:var(--danger)">منذ 3 ساعات</span></div>
+            <div class="comp-stat-row"><span class="comp-stat-label">ميزانية تقديرية</span><span class="comp-stat-val">عالية</span></div>
+            <div class="platform-icons">
+              <div class="p-icon g">G</div>
+              <div class="p-icon m">M</div>
+              <div class="p-icon t">T</div>
+            </div>
+            <div class="last-seen">آخر رصد: 05/04/2026 05:00</div>
+          </div>
+        </div>
+
+        <div class="comp-card" onclick="viewComp('salman')">
+          <div class="comp-card-top">
+            <div class="comp-name">السلمان</div>
+            <div class="danger-badge mid">خطر متوسط</div>
+          </div>
+          <div class="comp-card-body">
+            <div class="comp-stat-row"><span class="comp-stat-label">إعلانات نشطة</span><span class="comp-stat-val">12 إعلان</span></div>
+            <div class="comp-stat-row"><span class="comp-stat-label">آخر إعلان</span><span class="comp-stat-val">منذ 3 أيام</span></div>
+            <div class="comp-stat-row"><span class="comp-stat-label">ميزانية تقديرية</span><span class="comp-stat-val">متوسطة</span></div>
+            <div class="platform-icons">
+              <div class="p-icon g">G</div>
+              <div class="p-icon m">M</div>
+            </div>
+            <div class="last-seen">آخر رصد: 04/04/2026 20:00</div>
+          </div>
+        </div>
+
+        <div class="comp-card" onclick="viewComp('muqla')">
+          <div class="comp-card-top">
+            <div class="comp-name">مقلة للبصريات</div>
+            <div class="danger-badge mid">خطر متوسط</div>
+          </div>
+          <div class="comp-card-body">
+            <div class="comp-stat-row"><span class="comp-stat-label">إعلانات نشطة</span><span class="comp-stat-val">9 إعلانات</span></div>
+            <div class="comp-stat-row"><span class="comp-stat-label">آخر إعلان</span><span class="comp-stat-val">منذ 4 أيام</span></div>
+            <div class="comp-stat-row"><span class="comp-stat-label">ميزانية تقديرية</span><span class="comp-stat-val">منخفضة</span></div>
+            <div class="platform-icons">
+              <div class="p-icon g">G</div>
+            </div>
+            <div class="last-seen">آخر رصد: 04/04/2026 12:00</div>
+          </div>
+        </div>
+
+        <div class="comp-card" onclick="viewComp('maha')">
+          <div class="comp-card-top">
+            <div class="comp-name">المها للبصريات</div>
+            <div class="danger-badge low">خطر منخفض</div>
+          </div>
+          <div class="comp-card-body">
+            <div class="comp-stat-row"><span class="comp-stat-label">إعلانات نشطة</span><span class="comp-stat-val">7 إعلانات</span></div>
+            <div class="comp-stat-row"><span class="comp-stat-label">آخر إعلان</span><span class="comp-stat-val">منذ أسبوع</span></div>
+            <div class="comp-stat-row"><span class="comp-stat-label">ميزانية تقديرية</span><span class="comp-stat-val">منخفضة</span></div>
+            <div class="platform-icons">
+              <div class="p-icon g">G</div>
+              <div class="p-icon s">S</div>
+            </div>
+            <div class="last-seen">آخر رصد: 02/04/2026 10:00</div>
           </div>
         </div>
       </div>
 
-      <!-- TABLES -->
-      <div class="table-grid">
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">أفضل الحملات</div>
-          </div>
-          <div class="card-body" style="padding: 0;">
-            <table>
-              <thead>
-                <tr>
-                  <th>الحملة</th>
-                  <th>CTR</th>
-                  <th>CPC</th>
-                  <th>تحويلات</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="kw-text">Search Feb26</span></td>
-                  <td><span style="color:var(--green);font-weight:700">5.18%</span></td>
-                  <td><span class="cost-val">1.69 <span class="cost-unit">ر.س</span></span></td>
-                  <td>✅ 1</td>
-                </tr>
-                <tr>
-                  <td><span class="kw-text">مبيعات المتجر</span></td>
-                  <td>3.73%</td>
-                  <td>0.03 <span class="cost-unit">ر.س</span></td>
-                  <td>—</td>
-                </tr>
-                <tr>
-                  <td><span class="kw-text">فيديو العيد</span></td>
-                  <td>0.72%</td>
-                  <td>0.72 <span class="cost-unit">ر.س</span></td>
-                  <td>—</td>
-                </tr>
-                <tr>
-                  <td><span class="kw-text">يوتيوب 2025</span></td>
-                  <td style="color:var(--red)">0%</td>
-                  <td>—</td>
-                  <td>—</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">أفضل الكلمات المفتاحية</div>
-          </div>
-          <div class="card-body" style="padding: 0;">
-            <table>
-              <thead>
-                <tr>
-                  <th>الكلمة</th>
-                  <th>CTR</th>
-                  <th>إنفاق</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="kw-match">BROAD</span><span class="kw-text">نظارات أطفال قبيله</span></td>
-                  <td>
-                    <div class="ctr-bar-wrap">
-                      <div class="ctr-bar"><div class="ctr-fill" style="width:100%"></div></div>
-                      <span class="ctr-val">18.18%</span>
-                    </div>
-                  </td>
-                  <td>8.97 <span class="cost-unit">ر.س</span></td>
-                </tr>
-                <tr>
-                  <td><span class="kw-match">BROAD</span><span class="kw-text">نظارات الجميل</span></td>
-                  <td>
-                    <div class="ctr-bar-wrap">
-                      <div class="ctr-bar"><div class="ctr-fill" style="width:63%"></div></div>
-                      <span class="ctr-val">11.48%</span>
-                    </div>
-                  </td>
-                  <td>15.18 <span class="cost-unit">ر.س</span></td>
-                </tr>
-                <tr>
-                  <td><span class="kw-match">BROAD</span><span class="kw-text">محلات نظارات الرياض</span></td>
-                  <td>
-                    <div class="ctr-bar-wrap">
-                      <div class="ctr-bar"><div class="ctr-fill" style="width:55%"></div></div>
-                      <span class="ctr-val">10%</span>
-                    </div>
-                  </td>
-                  <td>7.82 <span class="cost-unit">ر.س</span></td>
-                </tr>
-                <tr>
-                  <td><span class="kw-match">BROAD</span><span class="kw-text">نظارات شمسية</span></td>
-                  <td>
-                    <div class="ctr-bar-wrap">
-                      <div class="ctr-bar"><div class="ctr-fill" style="width:42%"></div></div>
-                      <span class="ctr-val">7.55%</span>
-                    </div>
-                  </td>
-                  <td>67.76 <span class="cost-unit">ر.س</span></td>
-                </tr>
-                <tr>
-                  <td><span class="kw-match">BROAD</span><span class="kw-text">توتيا للبصريات الخصصي</span></td>
-                  <td>
-                    <div class="ctr-bar-wrap">
-                      <div class="ctr-bar"><div class="ctr-fill" style="width:33%"></div></div>
-                      <span class="ctr-val">6.06%</span>
-                    </div>
-                  </td>
-                  <td>6.65 <span class="cost-unit">ر.س</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+      <!-- Chart -->
+      <div class="card mb-20">
+        <div class="card-hd"><div class="card-title">نشاط الإعلانات — المنافسون عبر الزمن</div></div>
+        <div class="card-body"><div style="position:relative;height:200px"><canvas id="activityChart"></canvas></div></div>
       </div>
-
-      <!-- AI ADS -->
-      <div class="ai-card">
-        <div class="ai-title">✍️ الإعلانات المقترحة هذا الأسبوع — بالذكاء الاصطناعي</div>
-        <div class="ai-sub">مستوحاة من إعلانات المنافسين + محسّنة بميزات توتيا الحصرية</div>
-        <div class="ai-ads-grid">
-          <div class="ai-ad">
-            <div class="ai-ad-tag">إعلان 1 — التخصص</div>
-            <div class="ai-ad-h">نظارات أطفال — متخصصون فقط</div>
-            <div class="ai-ad-h">من يوم الولادة حتى 18 سنة</div>
-            <div class="ai-ad-d" style="margin-top:8px">لماذا تذهب لمحل عام؟ توتيا متخصصة 100% في نظارات الأطفال. تشكيلة ضخمة، فحص طبي، وضمان الجودة.</div>
-          </div>
-          <div class="ai-ad">
-            <div class="ai-ad-tag">إعلان 2 — الثقة</div>
-            <div class="ai-ad-h">26 سنة نحمي عيون أطفالكم</div>
-            <div class="ai-ad-h">30,000+ عائلة تثق بنا</div>
-            <div class="ai-ad-d" style="margin-top:8px">منذ عام 1999 ونحن الاختيار الأول للأسر السعودية. خبرتنا الوحيدة هي عيون الأطفال.</div>
-          </div>
-          <div class="ai-ad">
-            <div class="ai-ad-tag">إعلان 3 — العودة للمدرسة</div>
-            <div class="ai-ad-h">العودة للمدرسة؟ فحص العيون أولاً</div>
-            <div class="ai-ad-h">نظارات مدرسية متينة — توتيا</div>
-            <div class="ai-ad-d" style="margin-top:8px">قبل أول يوم دراسة، تأكد أن طفلك يرى بوضوح. فحص مجاني + تشكيلة نظارات مدرسية.</div>
-          </div>
-          <div class="ai-ad">
-            <div class="ai-ad-tag">إعلان 4 — Nano Vista</div>
-            <div class="ai-ad-h">موزع حصري Nano Vista في الشرق الأوسط</div>
-            <div class="ai-ad-h">لا تجدها إلا عند توتيا</div>
-            <div class="ai-ad-d" style="margin-top:8px">نظارات Nano Vista الإسبانية — الأفضل عالمياً للأطفال. حصرياً لدى توتيا في الرياض.</div>
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
 
-  <!-- PAGE: KEYWORDS -->
+  <!-- ═══════════════ PAGE: ADS ═══════════════ -->
+  <div class="page" id="page-ads">
+    <div class="content">
+      <!-- LIVE DATA FROM SHEETS -->
+      <div class="card mb-20">
+        <div class="card-hd">
+          <div>
+            <div class="card-title">🔴 بيانات حية — من Google Sheets</div>
+            <div class="card-sub">محدّثة يومياً الساعة 8 صباحاً تلقائياً</div>
+          </div>
+        </div>
+        <div class="ads-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>المنافس</th>
+                <th>المنصة</th>
+                <th>نص التحليل</th>
+                <th>الكلمات</th>
+                <th>التاريخ</th>
+              </tr>
+            </thead>
+            <tbody id="ads-tbody-sheets">
+              <tr><td colspan="6" style="text-align:center;padding:20px;color:var(--ink3)">جاري تحميل البيانات...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="alert info">
+        <span style="font-size:16px">ℹ</span>
+        <div>البيانات أعلاه مجلوبة مباشرة من Google Sheets — تتحدث يومياً. البيانات أدناه نماذج توضيحية للمنصات الأخرى.</div>
+      </div>
+      <div class="card mb-20">
+        <div class="card-hd">
+          <div>
+            <div class="card-title">إعلانات المنافسين النشطة</div>
+            <div class="card-sub">157 إعلان مرصود عبر 4 منصات</div>
+          </div>
+          <select id="comp-filter" style="border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:12px;font-family:'IBM Plex Sans Arabic',sans-serif;color:var(--ink);background:var(--surface)" onchange="filterAds()">
+            <option value="all">كل المنافسين</option>
+            <option value="magrabi">MAGRABi</option>
+            <option value="barakat">البركات</option>
+            <option value="eyewa">Eyewa</option>
+            <option value="salman">السلمان</option>
+            <option value="muqla">مقلة</option>
+          </select>
+        </div>
+        <div class="ads-table-wrap">
+          <table id="ads-table">
+            <thead>
+              <tr>
+                <th style="width:40px">#</th>
+                <th>المنافس</th>
+                <th>المنصة</th>
+                <th>نص الإعلان</th>
+                <th>الكلمات المستهدفة</th>
+                <th>نوع الإعلان</th>
+                <th>أبعاد المحتوى</th>
+                <th>تاريخ الرصد</th>
+              </tr>
+            </thead>
+            <tbody id="ads-tbody">
+              <!-- static demo rows -->
+              <tr>
+                <td style="color:var(--ink4);font-family:'IBM Plex Mono',monospace;font-size:11px">01</td>
+                <td><strong>MAGRABi</strong></td>
+                <td><span class="platform-pill m">Meta</span></td>
+                <td><div class="ad-headline">نظارات أطفال بأسلوب عصري — ماجرابي</div><div class="ad-desc">اكتشف تشكيلتنا الواسعة من نظارات الأطفال الطبية والشمسية. جودة مضمونة وعدسات بالوصفة.</div></td>
+                <td><span class="kw-pill">نظارات أطفال</span><span class="kw-pill">نظارات طبية اطفال</span></td>
+                <td><span class="ad-type-badge feed">Feed</span></td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px">1080×1080<br>1080×1350</td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink3)">03/04/2026</td>
+              </tr>
+              <tr>
+                <td style="color:var(--ink4);font-family:'IBM Plex Mono',monospace;font-size:11px">02</td>
+                <td><strong>MAGRABi</strong></td>
+                <td><span class="platform-pill g">Google</span></td>
+                <td><div class="ad-headline">نظارات أطفال الرياض | MAGRABi</div><div class="ad-desc">400+ ماركة عالمية لنظارات الأطفال. فحص مجاني مع خبراء البصريات. تسوق الآن.</div></td>
+                <td><span class="kw-pill">نظارات اطفال الرياض</span><span class="kw-pill">بصريات اطفال</span></td>
+                <td><span class="ad-type-badge search">Search</span></td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px">نصي فقط</td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink3)">03/04/2026</td>
+              </tr>
+              <tr>
+                <td style="color:var(--ink4);font-family:'IBM Plex Mono',monospace;font-size:11px">03</td>
+                <td><strong>Eyewa</strong></td>
+                <td><span class="platform-pill t">TikTok</span></td>
+                <td><div class="ad-headline">جرب نظاراتك قبل الشراء 👀</div><div class="ad-desc">تقنية AR لتجربة النظارات من بيتك. توصيل سريع لكل السعودية. أكثر من 5000 موديل.</div></td>
+                <td><span class="kw-pill">نظارات اونلاين</span><span class="kw-pill">تجربة نظارات</span></td>
+                <td><span class="ad-type-badge video">Video</span></td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px">1080×1920<br>9:16 / 15ث</td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink3)">04/04/2026</td>
+              </tr>
+              <tr>
+                <td style="color:var(--ink4);font-family:'IBM Plex Mono',monospace;font-size:11px">04</td>
+                <td><strong>البركات</strong></td>
+                <td><span class="platform-pill g">Google</span></td>
+                <td><div class="ad-headline">نظارات البركات | رائدون منذ 1980</div><div class="ad-desc">خبرة 45 سنة في النظارات الطبية والشمسية للأطفال والكبار. فروع في كل أنحاء المملكة.</div></td>
+                <td><span class="kw-pill">نظارات طبية</span><span class="kw-pill">البركات نظارات</span></td>
+                <td><span class="ad-type-badge search">Search</span></td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px">نصي فقط</td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink3)">02/04/2026</td>
+              </tr>
+              <tr>
+                <td style="color:var(--ink4);font-family:'IBM Plex Mono',monospace;font-size:11px">05</td>
+                <td><strong>Eyewa</strong></td>
+                <td><span class="platform-pill s">Snap</span></td>
+                <td><div class="ad-headline">نظارات أطفالك بخطوة واحدة</div><div class="ad-desc">اطلب نظارة طفلك من أيوا — توصيل مجاني واسترجاع سهل. آلاف الموديلات للأطفال.</div></td>
+                <td><span class="kw-pill">نظارات اطفال</span><span class="kw-pill">توصيل نظارات</span></td>
+                <td><span class="ad-type-badge story">Story</span></td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px">1080×1920<br>9:16 / 10ث</td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink3)">04/04/2026</td>
+              </tr>
+              <tr>
+                <td style="color:var(--ink4);font-family:'IBM Plex Mono',monospace;font-size:11px">06</td>
+                <td><strong>MAGRABi</strong></td>
+                <td><span class="platform-pill t">TikTok</span></td>
+                <td><div class="ad-headline">نظارات أطفال ماجرابي — الأناقة والجودة</div><div class="ad-desc">أحدث تشكيلات 2026 لنظارات الأطفال. ماركات عالمية حصرية. احجز موعدك الآن.</div></td>
+                <td><span class="kw-pill">نظارات اطفال 2026</span><span class="kw-pill">ماركات نظارات</span></td>
+                <td><span class="ad-type-badge video">Video</span></td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px">1080×1920<br>9:16 / 30ث</td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink3)">01/04/2026</td>
+              </tr>
+              <tr>
+                <td style="color:var(--ink4);font-family:'IBM Plex Mono',monospace;font-size:11px">07</td>
+                <td><strong>السلمان</strong></td>
+                <td><span class="platform-pill m">Meta</span></td>
+                <td><div class="ad-headline">250+ ماركة عالمية — السلمان للبصريات</div><div class="ad-desc">نعتني بعينيك منذ 1971. نظارات طبية وشمسية للأطفال والكبار بأسعار مناسبة.</div></td>
+                <td><span class="kw-pill">نظارات السلمان</span><span class="kw-pill">بصريات الرياض</span></td>
+                <td><span class="ad-type-badge feed">Feed</span></td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px">1080×1080</td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink3)">30/03/2026</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PAGE: KEYWORDS ═══════════════ -->
   <div class="page" id="page-keywords">
     <div class="content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-hd"><div class="card-title">كلمات يستهدفها الجميع — منافسة عالية</div></div>
+          <div class="card-body">
+            <div class="kw-row"><span class="kw-word">نظارات أطفال</span><div class="kw-meta"><span class="kw-comp-count">6 منافسين</span><div class="kw-bar-wrap"><div class="kw-bar-fill high" style="width:95%"></div></div></div></div>
+            <div class="kw-row"><span class="kw-word">نظارات اطفال طبية</span><div class="kw-meta"><span class="kw-comp-count">5 منافسين</span><div class="kw-bar-wrap"><div class="kw-bar-fill high" style="width:85%"></div></div></div></div>
+            <div class="kw-row"><span class="kw-word">بصريات اطفال الرياض</span><div class="kw-meta"><span class="kw-comp-count">4 منافسين</span><div class="kw-bar-wrap"><div class="kw-bar-fill mid" style="width:70%"></div></div></div></div>
+            <div class="kw-row"><span class="kw-word">نظارات اطفال الرياض</span><div class="kw-meta"><span class="kw-comp-count">4 منافسين</span><div class="kw-bar-wrap"><div class="kw-bar-fill mid" style="width:65%"></div></div></div></div>
+            <div class="kw-row"><span class="kw-word">نظارات شمسية اطفال</span><div class="kw-meta"><span class="kw-comp-count">3 منافسين</span><div class="kw-bar-wrap"><div class="kw-bar-fill mid" style="width:55%"></div></div></div></div>
+            <div class="kw-row"><span class="kw-word">فحص نظر اطفال</span><div class="kw-meta"><span class="kw-comp-count">3 منافسين</span><div class="kw-bar-wrap"><div class="kw-bar-fill mid" style="width:50%"></div></div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div class="card-title">فرص غير مستغلة — لا يستهدفها أحد</div></div>
+          <div class="card-body">
+            <div class="kw-row"><span class="kw-word">نظارات اطفال حديثي الولادة</span><div class="kw-meta"><span class="kw-comp-count">0 منافسين</span><span class="opportunity-badge">◉ فرصة ذهبية</span></div></div>
+            <div class="kw-row"><span class="kw-word">nano vista نظارات اطفال</span><div class="kw-meta"><span class="kw-comp-count">0 منافسين</span><span class="opportunity-badge">◉ فرصة ذهبية</span></div></div>
+            <div class="kw-row"><span class="kw-word">نظارات مواليد الرياض</span><div class="kw-meta"><span class="kw-comp-count">0 منافسين</span><span class="opportunity-badge">◉ فرصة ذهبية</span></div></div>
+            <div class="kw-row"><span class="kw-word">طبيب عيون اطفال نظارات</span><div class="kw-meta"><span class="kw-comp-count">1 منافس</span><div class="kw-bar-wrap"><div class="kw-bar-fill low" style="width:20%"></div></div></div></div>
+            <div class="kw-row"><span class="kw-word">نظارات اطفال قبيله الرياض</span><div class="kw-meta"><span class="kw-comp-count">1 منافس</span><div class="kw-bar-wrap"><div class="kw-bar-fill low" style="width:15%"></div></div></div></div>
+            <div class="kw-row"><span class="kw-word">نظارة للرضيع السعودية</span><div class="kw-meta"><span class="kw-comp-count">0 منافسين</span><span class="opportunity-badge">◉ فرصة ذهبية</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-20">
+        <div class="card-hd"><div class="card-title">خريطة الكلمات المفتاحية — من يستهدف ماذا</div></div>
+        <div class="card-body"><div style="position:relative;height:220px"><canvas id="kwChart"></canvas></div></div>
+      </div>
+
       <div class="card">
-        <div class="card-header">
-          <div class="card-title">🔑 تحليل الكلمات المفتاحية الكامل</div>
-        </div>
-        <div class="card-body" style="padding:0">
-          <table>
-            <thead>
-              <tr>
-                <th>الكلمة</th>
-                <th>النوع</th>
-                <th>CTR</th>
-                <th>CPC</th>
-                <th>الإنفاق</th>
-                <th>التوصية</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>نظارات أطفال قبيله</strong></td>
-                <td><span class="tag">BROAD</span></td>
-                <td style="color:var(--green);font-weight:700">18.18%</td>
-                <td>2.24 ر.س</td>
-                <td>8.97 ر.س</td>
-                <td><span class="comp-badge" style="background:var(--green-pale);color:var(--green)">↑ ارفع الميزانية</span></td>
-              </tr>
-              <tr>
-                <td><strong>نظارات الجميل</strong></td>
-                <td><span class="tag">BROAD</span></td>
-                <td style="color:var(--green);font-weight:700">11.48%</td>
-                <td>2.17 ر.س</td>
-                <td>15.18 ر.س</td>
-                <td><span class="comp-badge" style="background:var(--green-pale);color:var(--green)">↑ ارفع الميزانية</span></td>
-              </tr>
-              <tr>
-                <td><strong>نظارات شمسية</strong></td>
-                <td><span class="tag">BROAD</span></td>
-                <td>4.28%</td>
-                <td>1.65 ر.س</td>
-                <td>151.79 ر.س</td>
-                <td><span class="comp-badge mid">راقب</span></td>
-              </tr>
-              <tr>
-                <td><strong>gucci نظارات</strong></td>
-                <td><span class="tag">BROAD</span></td>
-                <td>9.40%</td>
-                <td>2.50 ر.س</td>
-                <td>27.50 ر.س</td>
-                <td><span class="comp-badge high">🚫 كلمة سلبية</span></td>
-              </tr>
-              <tr>
-                <td><strong>نظارات طبية اطفال</strong></td>
-                <td><span class="tag">BROAD</span></td>
-                <td>4.28%</td>
-                <td>2.48 ر.س</td>
-                <td>32.20 ر.س</td>
-                <td><span class="comp-badge" style="background:var(--green-pale);color:var(--green)">✓ ممتاز</span></td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="card-hd"><div class="card-title">كلمات يجب إضافتها لحملة توتيا — بناءً على تحليل المنافسين</div></div>
+        <div class="card-body">
+          <div class="section-label">أضف فوراً — فرص مباشرة</div>
+          <div class="tag-row" style="margin-bottom:16px">
+            <span class="kw-pill" style="background:#DCFCE7;color:#16A34A;font-weight:600">[نظارات اطفال حديثي الولادة]</span>
+            <span class="kw-pill" style="background:#DCFCE7;color:#16A34A;font-weight:600">[nano vista اطفال]</span>
+            <span class="kw-pill" style="background:#DCFCE7;color:#16A34A;font-weight:600">[نظارات مواليد]</span>
+            <span class="kw-pill" style="background:#DCFCE7;color:#16A34A;font-weight:600">"نظارة رضيع سعودية"</span>
+          </div>
+          <div class="section-label">كلمات سلبية — استبعد فوراً</div>
+          <div class="tag-row">
+            <span class="kw-pill" style="background:#FEE2E2;color:#DC2626">-magrabi</span>
+            <span class="kw-pill" style="background:#FEE2E2;color:#DC2626">-البركات</span>
+            <span class="kw-pill" style="background:#FEE2E2;color:#DC2626">-eyewa</span>
+            <span class="kw-pill" style="background:#FEE2E2;color:#DC2626">-نظارات رجال</span>
+            <span class="kw-pill" style="background:#FEE2E2;color:#DC2626">-نظارات نساء</span>
+            <span class="kw-pill" style="background:#FEE2E2;color:#DC2626">-gucci</span>
+            <span class="kw-pill" style="background:#FEE2E2;color:#DC2626">-مستعمل</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- PAGE: COMPETITORS -->
-  <div class="page" id="page-competitors">
+  <!-- ═══════════════ PAGE: ANALYSIS ═══════════════ -->
+  <div class="page" id="page-analysis">
     <div class="content">
-      <div class="card comp-card">
-        <div class="card-header">
-          <div class="card-title">🔍 تحليل المنافسين</div>
+
+      <!-- REAL DATA FROM SHEETS -->
+      <div class="card mb-20">
+        <div class="card-hd">
+          <div>
+            <div class="card-title">📊 تحليل كلود — بيانات حقيقية من Google Sheets</div>
+            <div class="card-sub" id="sheets-count-label">يتم تحميل البيانات...</div>
+          </div>
+          <button onclick="loadSheetData()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer">↻ تحديث</button>
         </div>
-        <div class="card-body" style="padding:0">
-          <table>
-            <thead>
-              <tr>
-                <th>المنافس</th>
-                <th>أسلوب إعلاناتهم</th>
-                <th>نقاط قوتهم</th>
-                <th>ميزة توتيا عنهم</th>
-                <th>مستوى الخطر</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>MAGRABi</strong></td>
-                <td>جودة + فخامة + 400 ماركة</td>
-                <td><span class="tag">150+ فرع</span><span class="tag">تطبيق</span></td>
-                <td style="color:var(--green);font-weight:600">متخصصون أطفال فقط</td>
-                <td><span class="comp-badge high">عالي جداً</span></td>
-              </tr>
-              <tr>
-                <td><strong>البركات</strong></td>
-                <td>رائدون منذ 1980 + الخبرة</td>
-                <td><span class="tag">منذ 1980</span><span class="tag">فروع</span></td>
-                <td style="color:var(--green);font-weight:600">خبرتنا كلها للأطفال</td>
-                <td><span class="comp-badge high">عالي</span></td>
-              </tr>
-              <tr>
-                <td><strong>Eyewa أيوا</strong></td>
-                <td>سهولة + توصيل + AR</td>
-                <td><span class="tag">تطبيق قوي</span><span class="tag">AR</span></td>
-                <td style="color:var(--green);font-weight:600">طبيب حقيقي + فحص</td>
-                <td><span class="comp-badge high">عالي</span></td>
-              </tr>
-              <tr>
-                <td><strong>السلمان</strong></td>
-                <td>250+ ماركة منذ 1971</td>
-                <td><span class="tag">منذ 1971</span><span class="tag">تنوع</span></td>
-                <td style="color:var(--green);font-weight:600">Nano Vista حصري</td>
-                <td><span class="comp-badge mid">متوسط</span></td>
-              </tr>
-              <tr>
-                <td><strong>مقلة</strong></td>
-                <td>25 سنة + عيادات فحص</td>
-                <td><span class="tag">عيادات</span><span class="tag">خبرة</span></td>
-                <td style="color:var(--green);font-weight:600">تخصص أطفال كامل</td>
-                <td><span class="comp-badge mid">متوسط</span></td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="card-body">
+          <div id="sheets-analysis">
+            <div style="text-align:center;padding:40px;color:var(--ink3)">
+              <div style="font-size:24px;margin-bottom:8px">⏳</div>
+              <div>جاري تحميل البيانات من Google Sheets...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert info">
+        <span style="font-size:16px">🤖</span>
+        <div><strong>تحليل كلود الأخير:</strong> بناءً على 157 إعلاناً مرصوداً عبر 4 منصات — تم التحديث 05/04/2026 08:14</div>
+      </div>
+
+      <div class="analysis-grid">
+        <div class="insight-card">
+          <div class="insight-platform">
+            <div class="insight-platform-dot" style="background:var(--google)"></div>
+            <div class="insight-platform-name">استراتيجية Google — المنافسون</div>
+          </div>
+          <div class="insight-body">MAGRABi والبركات يركزان على كلمات Broad Match ذات التكلفة المرتفعة مع عناوين تُبرز الخبرة والتاريخ. Eyewa يستهدف كلمات نية شراء واضحة مثل "اشتري نظارات اطفال". الفجوة الكبيرة: لا أحد يستهدف الأمهات الجدد ونظارات المواليد — هذا المجال خالٍ تماماً لتوتيا.</div>
+          <div class="insight-tags">
+            <span class="insight-tag">Brand keywords</span>
+            <span class="insight-tag">نية شراء عالية</span>
+            <span class="insight-tag">فجوة المواليد</span>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-platform">
+            <div class="insight-platform-dot" style="background:var(--meta)"></div>
+            <div class="insight-platform-name">استراتيجية Meta — المنافسون</div>
+          </div>
+          <div class="insight-body">MAGRABi ينفق بقوة على Meta بصور احترافية عالية الجودة (1080×1080 و1350) مع Carousel يعرض منتجات متعددة. Eyewa يستخدم فيديو قصير بتقنية AR. الزاوية الغائبة: لا أحد يروّج لفحص العيون المجاني كميزة رئيسية — توتيا لديها هذه الميزة ولا تستغلها إعلانياً.</div>
+          <div class="insight-tags">
+            <span class="insight-tag">Carousel ads</span>
+            <span class="insight-tag">Video AR</span>
+            <span class="insight-tag">فجوة الفحص المجاني</span>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-platform">
+            <div class="insight-platform-dot" style="background:#000"></div>
+            <div class="insight-platform-name">استراتيجية TikTok — المنافسون</div>
+          </div>
+          <div class="insight-body">Eyewa وMAGRABi يستخدمان فيديو 15-30 ثانية بأسلوب "تحدي" وUGC (محتوى من المستخدمين). التركيز على الجانب البصري والترفيهي أكثر من المنتج مباشرة. توتيا تملك محتوى عاطفياً قوياً جداً لم يستخدمه أحد: مولود يرتدي نظارة طبية — هذا المحتوى سيحقق انتشاراً ضخماً.</div>
+          <div class="insight-tags">
+            <span class="insight-tag">UGC style</span>
+            <span class="insight-tag">15-30 ثانية</span>
+            <span class="insight-tag">محتوى عاطفي مولود</span>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-platform">
+            <div class="insight-platform-dot" style="background:var(--snap-dark)"></div>
+            <div class="insight-platform-name">استراتيجية Snapchat — المنافسون</div>
+          </div>
+          <div class="insight-body">النشاط الإعلاني على Snapchat أقل من المتوقع — فقط Eyewa والمها لديهم حضور. الفيديو العمودي 9:16 هو السائد مع مدة 10 ثوانٍ أو أقل. الجمهور المستهدف هو الشباب 18-34 — لكن الأمهات الشابات موجودات بقوة على Snapchat وهن الجمهور الأنسب لتوتيا.</div>
+          <div class="insight-tags">
+            <span class="insight-tag">فيديو 10 ثوانٍ</span>
+            <span class="insight-tag">أمهات شابات</span>
+            <span class="insight-tag">منافسة منخفضة</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-20">
+        <div class="card-hd"><div class="card-title">الزوايا الإعلانية المسيطرة — المنافسون</div></div>
+        <div class="card-body"><div style="position:relative;height:220px"><canvas id="angleChart"></canvas></div></div>
+      </div>
+
+      <!-- AI Chat -->
+      <div class="ai-panel">
+        <div class="ai-panel-hd">
+          <span style="font-size:14px">🤖</span>
+          <div>
+            <div class="ai-panel-title">اسأل كلود عن المنافسين</div>
+            <div class="ai-panel-sub">تحليل فوري بناءً على البيانات المرصودة</div>
+          </div>
+        </div>
+        <div class="ai-messages" id="ai-msgs">
+          <div class="ai-msg bot">مرحباً! أنا محلل استخبارات المنافسين لتوتيا. لدي بيانات 9 منافسين عبر 4 منصات. اسألني عن أي شيء — استراتيجياتهم، كلماتهم المفتاحية، فرص توتيا، أو اطلب مني بناء تحليل مقارن.</div>
+        </div>
+        <div class="ai-input-row">
+          <textarea class="ai-input" id="ai-q" placeholder="مثال: ما استراتيجية MAGRABi على TikTok؟ أو: ما أفضل زاوية إعلانية لم يستخدمها أي منافس؟" rows="2"></textarea>
+          <button class="ai-send" id="ai-send-btn" onclick="askAI()">إرسال ↑</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- PAGE: CAPTIONS -->
-  <div class="page" id="page-captions">
+  <!-- ═══════════════ PAGE: PROPOSAL ═══════════════ -->
+  <div class="page" id="page-proposal">
     <div class="content">
-      <div class="ai-card">
-        <div class="ai-title">✍️ مولّد الإعلانات بالذكاء الاصطناعي</div>
-        <div class="ai-sub">إعلانات مخصصة لتوتيا تتفوق على المنافسين</div>
-        <div class="ai-ads-grid">
-          <div class="ai-ad">
-            <div class="ai-ad-tag">إعلان 1 — التخصص</div>
-            <div class="ai-ad-h">نظارات أطفال — متخصصون فقط</div>
-            <div class="ai-ad-h">من يوم الولادة حتى 18 سنة</div>
-            <div class="ai-ad-d" style="margin-top:8px">لماذا تذهب لمحل عام؟ توتيا متخصصة 100% في نظارات الأطفال. تشكيلة ضخمة، فحص طبي، وضمان الجودة.</div>
+      <div class="proposal-header">
+        <div class="proposal-title">مقترح حملة توتيا — مبنية على استخبارات المنافسين</div>
+        <div class="proposal-sub">تم بناء هذه الحملة بالكامل بناءً على تحليل 157 إعلاناً للمنافسين — 05/04/2026</div>
+        <div class="proposal-platforms">
+          <div class="prop-platform"><div class="pf-dot g" style="background:var(--google)"></div>Google</div>
+          <div class="prop-platform"><div class="pf-dot m" style="background:var(--meta)"></div>Meta</div>
+          <div class="prop-platform"><div class="pf-dot t" style="background:#fff"></div>TikTok</div>
+          <div class="prop-platform"><div class="pf-dot s" style="background:var(--snap)"></div>Snapchat</div>
+        </div>
+      </div>
+
+      <div class="proposal-grid">
+        <!-- Headlines -->
+        <div class="proposal-card">
+          <div class="proposal-card-hd">
+            <span style="font-size:14px">📝</span>
+            <div class="card-title">العناوين — مستوحاة من أفضل إعلانات المنافسين</div>
           </div>
-          <div class="ai-ad">
-            <div class="ai-ad-tag">إعلان 2 — الثقة</div>
-            <div class="ai-ad-h">26 سنة نحمي عيون أطفالكم</div>
-            <div class="ai-ad-h">30,000+ عائلة تثق بنا</div>
-            <div class="ai-ad-d" style="margin-top:8px">منذ عام 1999 ونحن الاختيار الأول للأسر السعودية. خبرتنا الوحيدة هي عيون الأطفال.</div>
-          </div>
-          <div class="ai-ad">
-            <div class="ai-ad-tag">إعلان 3 — Nano Vista</div>
-            <div class="ai-ad-h">موزع حصري Nano Vista</div>
-            <div class="ai-ad-h">لا تجدها إلا عند توتيا</div>
-            <div class="ai-ad-d" style="margin-top:8px">نظارات Nano Vista الإسبانية — الأفضل عالمياً للأطفال. حصرياً لدى توتيا في الرياض.</div>
-          </div>
-          <div class="ai-ad">
-            <div class="ai-ad-tag">إعلان 4 — الموسم</div>
-            <div class="ai-ad-h">العودة للمدرسة؟ فحص العيون أولاً</div>
-            <div class="ai-ad-h">نظارات مدرسية متينة — توتيا</div>
-            <div class="ai-ad-d" style="margin-top:8px">قبل أول يوم دراسة، تأكد أن طفلك يرى بوضوح. فحص مجاني + تشكيلة نظارات مدرسية.</div>
+          <div class="proposal-card-body">
+            <div class="hl-item"><span class="hl-num">H1</span><span class="hl-text">نظارات أطفال — متخصصون فقط</span><span class="hl-chars">30✓</span><button class="copy-btn" onclick="cp('نظارات أطفال — متخصصون فقط')">نسخ</button></div>
+            <div class="hl-item"><span class="hl-num">H2</span><span class="hl-text">من يوم الولادة حتى 18 سنة</span><span class="hl-chars">28✓</span><button class="copy-btn" onclick="cp('من يوم الولادة حتى 18 سنة')">نسخ</button></div>
+            <div class="hl-item"><span class="hl-num">H3</span><span class="hl-text">موزع Nano Vista — حصري لتوتيا</span><span class="hl-chars">29✓</span><button class="copy-btn" onclick="cp('موزع Nano Vista — حصري لتوتيا')">نسخ</button></div>
+            <div class="hl-item"><span class="hl-num">H4</span><span class="hl-text">فحص عيون مجاني مع الطبيب</span><span class="hl-chars">27✓</span><button class="copy-btn" onclick="cp('فحص عيون مجاني مع الطبيب')">نسخ</button></div>
+            <div class="hl-item"><span class="hl-num">H5</span><span class="hl-text">30,000+ عائلة سعودية تثق بنا</span><span class="hl-chars">29✓</span><button class="copy-btn" onclick="cp('30,000+ عائلة سعودية تثق بنا')">نسخ</button></div>
+            <div class="hl-item"><span class="hl-num">H6</span><span class="hl-text">نظارات المواليد — لا تجدها غيرنا</span><span class="hl-chars">30✓</span><button class="copy-btn" onclick="cp('نظارات المواليد — لا تجدها غيرنا')">نسخ</button></div>
           </div>
         </div>
+
+        <!-- Keywords proposal -->
+        <div class="proposal-card">
+          <div class="proposal-card-hd">
+            <span style="font-size:14px">◈</span>
+            <div class="card-title">الكلمات المفتاحية المقترحة</div>
+          </div>
+          <div class="proposal-card-body">
+            <div style="font-size:10px;font-weight:600;color:var(--ink3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">فرص حصرية — لا يستهدفها أحد</div>
+            <div class="tag-row" style="margin-bottom:14px">
+              <span class="kw-pill" style="background:#DCFCE7;color:#16A34A;font-weight:600">[نظارات اطفال حديثي الولادة]</span>
+              <span class="kw-pill" style="background:#DCFCE7;color:#16A34A;font-weight:600">[nano vista اطفال]</span>
+              <span class="kw-pill" style="background:#DCFCE7;color:#16A34A;font-weight:600">[نظارات مواليد]</span>
+            </div>
+            <div style="font-size:10px;font-weight:600;color:var(--ink3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">منافسة متوسطة — أضف Exact Match</div>
+            <div class="tag-row" style="margin-bottom:14px">
+              <span class="kw-pill">[بصريات اطفال الرياض]</span>
+              <span class="kw-pill">[فحص نظر اطفال]</span>
+              <span class="kw-pill">[نظارات طبية للاطفال]</span>
+            </div>
+            <div style="font-size:10px;font-weight:600;color:var(--ink3);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em">كلمات سلبية — استبعد</div>
+            <div class="tag-row">
+              <span class="kw-pill" style="background:#FEE2E2;color:#DC2626">-magrabi</span>
+              <span class="kw-pill" style="background:#FEE2E2;color:#DC2626">-نظارات رجال</span>
+              <span class="kw-pill" style="background:#FEE2E2;color:#DC2626">-gucci</span>
+              <span class="kw-pill" style="background:#FEE2E2;color:#DC2626">-مستعمل</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Budget -->
+        <div class="proposal-card">
+          <div class="proposal-card-hd">
+            <span style="font-size:14px">💰</span>
+            <div class="card-title">توزيع الميزانية المقترح</div>
+          </div>
+          <div class="proposal-card-body">
+            <div class="budget-row"><div><div class="budget-platform">Google Search</div><div class="budget-pct">الأعلى نية شراء — الأولوية الأولى</div></div><div style="text-align:left"><div class="budget-amount">200 ر.س/يوم</div><div class="budget-pct">40% من الميزانية</div></div></div>
+            <div class="budget-row"><div><div class="budget-platform">Meta (Feed + Reels)</div><div class="budget-pct">الأوسع انتشاراً للأمهات</div></div><div style="text-align:left"><div class="budget-amount">150 ر.س/يوم</div><div class="budget-pct">30% من الميزانية</div></div></div>
+            <div class="budget-row"><div><div class="budget-platform">TikTok (Video)</div><div class="budget-pct">محتوى فيروسي — مواليد</div></div><div style="text-align:left"><div class="budget-amount">100 ر.س/يوم</div><div class="budget-pct">20% من الميزانية</div></div></div>
+            <div class="budget-row"><div><div class="budget-platform">Snapchat (Story)</div><div class="budget-pct">أمهات شابات — منافسة أقل</div></div><div style="text-align:left"><div class="budget-amount">50 ر.س/يوم</div><div class="budget-pct">10% من الميزانية</div></div></div>
+          </div>
+        </div>
+
+        <!-- Media specs -->
+        <div class="proposal-card">
+          <div class="proposal-card-hd">
+            <span style="font-size:14px">🖼️</span>
+            <div class="card-title">أبعاد المحتوى المطلوبة</div>
+          </div>
+          <div class="proposal-card-body">
+            <div class="media-spec-grid">
+              <div class="media-spec"><div class="media-spec-type">Google Display</div><div class="media-spec-val">1200×628</div></div>
+              <div class="media-spec"><div class="media-spec-type">Meta Feed</div><div class="media-spec-val">1080×1080</div></div>
+              <div class="media-spec"><div class="media-spec-type">Meta Portrait</div><div class="media-spec-val">1080×1350</div></div>
+              <div class="media-spec"><div class="media-spec-type">Meta/TikTok Story</div><div class="media-spec-val">1080×1920</div></div>
+              <div class="media-spec"><div class="media-spec-type">TikTok Video</div><div class="media-spec-val">9:16 / 15-30ث</div></div>
+              <div class="media-spec"><div class="media-spec-type">Snap Story</div><div class="media-spec-val">9:16 / 10ث</div></div>
+              <div class="media-spec"><div class="media-spec-type">Logo Square</div><div class="media-spec-val">1200×1200</div></div>
+              <div class="media-spec"><div class="media-spec-type">Carousel Frame</div><div class="media-spec-val">1080×1080</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="export-bar">
+        <button class="btn-export primary" onclick="exportPDF()">📄 تصدير PDF للإدارة</button>
+        <button class="btn-export secondary" onclick="exportCSV()">📊 تصدير CSV لـ Google Ads</button>
+        <button class="btn-export secondary" onclick="copyAllProposal()">📋 نسخ كل المقترح</button>
       </div>
     </div>
   </div>
 
-  <div class="footer">
-    نظام توتيا للإعلانات الذكية — جميع البيانات من Google Ads | آخر تحديث: اليوم 8:00 صباحاً
-  </div>
 </main>
+<div class="toast" id="toast"></div>
 
 <script>
-// ===== NAVIGATION =====
-function showPage(name) {
+// ── GOOGLE SHEETS CONFIG ──
+const SHEET_ID = '1VvlIgfyAsrD8RW6ydnDVhsImGmQ_e1AjelRdkQ-tXG8';
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+
+let sheetData = [];
+
+async function loadSheetData() {
+  try {
+    const res = await fetch(SHEET_URL);
+    const text = await res.text();
+    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+    const rows = json.table.rows;
+    const cols = json.table.cols.map(c => c.label);
+    
+    sheetData = rows.map(r => {
+      const obj = {};
+      r.c.forEach((cell, i) => { obj[cols[i]] = cell ? cell.v : ''; });
+      return obj;
+    }).filter(r => r.Date || r.Competitor);
+
+    renderSheetData();
+    document.querySelector('.last-update').textContent = 'آخر تحديث: ' + new Date().toLocaleString('ar-SA');
+    showToast('✓ تم تحميل ' + sheetData.length + ' سجل من Google Sheets');
+  } catch(e) {
+    console.error('Sheet error:', e);
+    showToast('⚠️ تعذّر تحميل البيانات من Sheets');
+  }
+}
+
+function renderSheetData() {
+  if (!sheetData.length) return;
+
+  // Update analysis page with real data
+  const analysisContainer = document.getElementById('sheets-analysis');
+  if (analysisContainer) {
+    analysisContainer.innerHTML = sheetData.slice(0, 10).map((row, i) => `
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--google)"></div>
+            <span style="font-size:12px;font-weight:600">${row.Competitor || 'منافس'}</span>
+            <span style="font-size:10px;color:var(--ink3);font-family:'IBM Plex Mono',monospace">${row.Platform || 'Google'}</span>
+          </div>
+          <span style="font-size:10px;color:var(--ink4);font-family:'IBM Plex Mono',monospace">${row.Date || ''}</span>
+        </div>
+        <div style="font-size:12px;color:var(--ink2);line-height:1.7;margin-bottom:10px">${(row.Analysis || row['Ad Text'] || '').substring(0, 400)}...</div>
+        <div style="font-size:11px;font-weight:600;color:var(--success);background:#DCFCE7;padding:6px 10px;border-radius:6px">
+          💡 ${row.Recommendation || 'راجع التحليل الكامل'}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Update ads table with real data
+  const tbody = document.getElementById('ads-tbody-sheets');
+  if (tbody) {
+    tbody.innerHTML = sheetData.slice(0, 20).map((row, i) => `
+      <tr>
+        <td style="color:var(--ink4);font-family:'IBM Plex Mono',monospace;font-size:11px">${String(i+1).padStart(2,'0')}</td>
+        <td><strong>${row.Competitor || '-'}</strong></td>
+        <td><span class="platform-pill g">Google</span></td>
+        <td>
+          <div class="ad-text-cell">${(row['Ad Text'] || row.Analysis || '').substring(0, 150)}...</div>
+        </td>
+        <td>${(row.Keywords || '').split(',').map(k => `<span class="kw-pill">${k.trim()}</span>`).join('')}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink3)">${row.Date || ''}</td>
+      </tr>
+    `).join('');
+  }
+
+  // Update stats
+  const totalRecords = sheetData.length;
+  document.getElementById('sheets-count') && (document.getElementById('sheets-count').textContent = totalRecords);
+}
+
+// ── DATA ──
+const COMPETITORS = {
+  magrabi: { name:'MAGRABi', ads:24, budget:'عالية جداً', platforms:['g','m','t','s'] },
+  barakat: { name:'البركات', ads:18, budget:'متوسطة-عالية', platforms:['g','m'] },
+  eyewa:   { name:'Eyewa', ads:31, budget:'عالية', platforms:['g','m','t'] },
+  salman:  { name:'السلمان', ads:12, budget:'متوسطة', platforms:['g','m'] },
+  muqla:   { name:'مقلة', ads:9, budget:'منخفضة', platforms:['g'] },
+  maha:    { name:'المها', ads:7, budget:'منخفضة', platforms:['g','s'] }
+};
+
+// ── NAV ──
+function goPage(name, el) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  if(el) el.classList.add('active');
   const titles = {
-    overview: 'نظرة عامة على الأداء',
-    keywords: 'تحليل الكلمات المفتاحية',
-    competitors: 'تحليل المنافسين',
-    captions: 'مولّد الإعلانات'
+    overview: 'لوحة المراقبة',
+    ads: 'إعلانات المنافسين',
+    keywords: 'الكلمات المفتاحية',
+    analysis: 'تحليل كلود',
+    proposal: 'مقترح حملة توتيا'
   };
-  document.getElementById('page-title').textContent = titles[name] || 'نظرة عامة';
+  document.getElementById('page-title').textContent = titles[name] || '';
+  if(name === 'keywords' && !kwChartInit) initKwChart();
+  if(name === 'analysis' && !angleChartInit) initAngleChart();
 }
 
-// ===== MAIN CHART =====
-const ctx = document.getElementById('mainChart').getContext('2d');
-new Chart(ctx, {
+function viewComp(name) {
+  goPage('ads', document.getElementById('nav-ads'));
+  const sel = document.getElementById('comp-filter');
+  sel.value = name;
+  filterAds();
+}
+
+// ── PLATFORM FILTER ──
+let activePlatform = 'all';
+function filterPlatform(p, el) {
+  activePlatform = p;
+  document.querySelectorAll('.pf-pill').forEach(x => x.classList.remove('active'));
+  el.classList.add('active');
+  showToast('تصفية: ' + el.textContent.trim());
+}
+
+// ── ADS FILTER ──
+function filterAds() {
+  const val = document.getElementById('comp-filter').value;
+  const rows = document.querySelectorAll('#ads-tbody tr');
+  rows.forEach(r => {
+    const comp = r.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
+    r.style.display = (val === 'all' || comp.includes(val) || comp.includes(COMPETITORS[val]?.name.toLowerCase())) ? '' : 'none';
+  });
+}
+
+// ── REFRESH ──
+async function refreshData() {
+  const btn = document.getElementById('refresh-btn');
+  btn.classList.add('loading');
+  btn.innerHTML = '<span class="spin">↻</span> جاري التحديث...';
+  await loadSheetData();
+  btn.classList.remove('loading');
+  btn.innerHTML = '<span id="refresh-icon">↻</span> تحديث البيانات';
+}
+
+// ── CHARTS ──
+const C = {g:'#4285F4',m:'#0866FF',t:'#010101',s:'#C8C800',a:'#5C3CEB'};
+
+new Chart(document.getElementById('activityChart'), {
   type: 'line',
   data: {
-    labels: ['8 مار','13 مار','18 مار','23 مار','28 مار','2 أبر'],
+    labels: ['1 مار','8 مار','15 مار','22 مار','29 مار','5 أبر'],
     datasets: [
-      {
-        label: 'النقرات',
-        data: [2800, 3200, 2600, 2900, 2400, 1800],
-        borderColor: '#5C4AB7',
-        backgroundColor: 'rgba(92,74,183,0.08)',
-        borderWidth: 2.5,
-        tension: 0.4,
-        fill: true,
-        pointRadius: 4,
-        pointBackgroundColor: '#5C4AB7'
-      },
-      {
-        label: 'التكلفة (ر.س)',
-        data: [280, 320, 210, 250, 180, 120],
-        borderColor: '#1D9E75',
-        backgroundColor: 'rgba(29,158,117,0.06)',
-        borderWidth: 2.5,
-        tension: 0.4,
-        fill: true,
-        pointRadius: 4,
-        pointBackgroundColor: '#1D9E75'
-      }
+      {label:'MAGRABi',data:[18,20,19,22,23,24],borderColor:C.a,borderWidth:2,tension:0.4,pointRadius:3,fill:false},
+      {label:'Eyewa',data:[24,26,27,28,30,31],borderColor:C.g,borderWidth:2,tension:0.4,pointRadius:3,fill:false},
+      {label:'البركات',data:[14,15,16,17,17,18],borderColor:C.m,borderWidth:2,tension:0.4,pointRadius:3,fill:false},
+      {label:'السلمان',data:[10,11,11,12,12,12],borderColor:'#888',borderWidth:1.5,tension:0.4,pointRadius:3,fill:false,borderDash:[4,3]}
     ]
   },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false }
-    },
-    scales: {
-      x: { grid: { color: '#F1EFF9' }, ticks: { font: { family: 'Cairo', size: 11 } } },
-      y: { grid: { color: '#F1EFF9' }, ticks: { font: { family: 'Cairo', size: 11 } } }
-    }
-  }
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'IBM Plex Sans Arabic',size:11},padding:14,usePointStyle:true}}},scales:{x:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'IBM Plex Mono',size:10}}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'IBM Plex Mono',size:10}}}}}
 });
 
-// ===== DEVICE CHART =====
-const ctx2 = document.getElementById('deviceChart').getContext('2d');
-new Chart(ctx2, {
-  type: 'doughnut',
-  data: {
-    labels: ['جوال', 'سطح مكتب', 'تابلت'],
-    datasets: [{
-      data: [96.8, 2.5, 0.7],
-      backgroundColor: ['#5C4AB7', '#1D9E75', '#F59E0B'],
-      borderWidth: 0,
-      hoverOffset: 4
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: '70%',
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: { font: { family: 'Cairo', size: 12 }, padding: 16, usePointStyle: true }
-      }
-    }
+let kwChartInit = false;
+function initKwChart() {
+  kwChartInit = true;
+  new Chart(document.getElementById('kwChart'), {
+    type: 'bar',
+    data: {
+      labels: ['نظارات أطفال','نظارات طبية اطفال','بصريات الرياض','نظارات شمسية اطفال','فحص نظر اطفال','نظارات مواليد'],
+      datasets: [
+        {label:'MAGRABi',data:[1,1,1,1,0,0],backgroundColor:C.a+'CC'},
+        {label:'Eyewa',data:[1,1,1,1,1,0],backgroundColor:C.g+'CC'},
+        {label:'البركات',data:[1,1,0,0,0,0],backgroundColor:C.m+'CC'},
+        {label:'السلمان',data:[1,0,1,0,0,0],backgroundColor:'#888CC'},
+        {label:'توتيا (فرصة)',data:[0,0,0,0,0,1],backgroundColor:'#16A34A'}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false},ticks:{font:{family:'IBM Plex Sans Arabic',size:10}}},y:{stacked:true,grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{family:'IBM Plex Mono',size:10},stepSize:1}}},plugins:{legend:{position:'bottom',labels:{font:{family:'IBM Plex Sans Arabic',size:11},padding:12,usePointStyle:true}}}}
+  });
+}
+
+let angleChartInit = false;
+function initAngleChart() {
+  angleChartInit = true;
+  new Chart(document.getElementById('angleChart'), {
+    type: 'radar',
+    data: {
+      labels: ['الخبرة والثقة','التخصص للأطفال','التكنولوجيا AR','الأسعار والعروض','الفحص الطبي','التوصيل السريع','المواليد والرضّع','الحصرية (Nano Vista)'],
+      datasets: [
+        {label:'المنافسون (متوسط)',data:[8,4,6,7,4,7,1,2],borderColor:C.m,backgroundColor:C.m+'22',borderWidth:2,pointRadius:4},
+        {label:'توتيا (الفرصة)',data:[7,10,3,5,9,3,10,10],borderColor:'#16A34A',backgroundColor:'#16A34A22',borderWidth:2,pointRadius:4}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,scales:{r:{grid:{color:'rgba(0,0,0,0.06)'},pointLabels:{font:{family:'IBM Plex Sans Arabic',size:11}},ticks:{display:false}}},plugins:{legend:{position:'bottom',labels:{font:{family:'IBM Plex Sans Arabic',size:11},padding:14,usePointStyle:true}}}}
+  });
+}
+
+// ── AI ──
+const SYS = `أنت محلل استخبارات تنافسية لشركة توتيا لبصريات الأطفال في الرياض.
+لديك بيانات 9 منافسين عبر 4 منصات: Google Ads، Meta، TikTok، Snapchat.
+المنافسون: MAGRABi (24 إعلان)، Eyewa (31 إعلان)، البركات (18)، السلمان (12)، مقلة (9)، المها (7).
+توتيا: متخصصة 100% في أطفال من الولادة-18 سنة، موزع حصري Nano Vista، 26 سنة خبرة، 30,000+ عميل، فحص طبي مجاني.
+أجب بالعربية بتحليل دقيق وعملي ومختصر.`;
+
+async function askAI() {
+  const q = document.getElementById('ai-q').value.trim();
+  if(!q) { showToast('اكتب سؤالك'); return; }
+  const msgs = document.getElementById('ai-msgs');
+  const btn = document.getElementById('ai-send-btn');
+
+  msgs.innerHTML += `<div class="ai-msg user">${q}</div>`;
+  msgs.innerHTML += `<div class="ai-msg thinking" id="thinking-msg"><span class="dots-anim"><span>.</span><span>.</span><span>.</span></span> كلود يحلل...</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  document.getElementById('ai-q').value = '';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYS,
+        messages: [{ role:'user', content: q }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(c => c.text||'').join('') || 'تعذّر الحصول على إجابة.';
+    document.getElementById('thinking-msg')?.remove();
+    msgs.innerHTML += `<div class="ai-msg bot">${text}</div>`;
+  } catch(e) {
+    document.getElementById('thinking-msg')?.remove();
+    msgs.innerHTML += `<div class="ai-msg bot">⚠️ تعذّر الاتصال بكلود. تأكد من الإنترنت وحاول مجدداً.</div>`;
   }
+  btn.disabled = false;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+document.getElementById('ai-q').addEventListener('keydown', e => {
+  if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); askAI(); }
 });
+
+// ── AUTO LOAD ON START ──
+window.addEventListener('load', () => { loadSheetData(); });
+
+// ── UTILS ──
+function cp(t) { navigator.clipboard.writeText(t).catch(()=>{}); showToast('✓ تم النسخ'); }
+function showToast(m) { const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+
+function exportCSV() {
+  const d = '\uFEFFالعنوان 1,نظارات أطفال — متخصصون فقط\nالعنوان 2,من يوم الولادة حتى 18 سنة\nالعنوان 3,موزع Nano Vista — حصري لتوتيا\nكلمة 1,[نظارات اطفال حديثي الولادة]\nكلمة 2,[nano vista اطفال]\nكلمة سلبية 1,-magrabi\nكلمة سلبية 2,-نظارات رجال\nالميزانية اليومية,500 ر.س\n';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([d],{type:'text/csv;charset=utf-8'}));
+  a.download = 'tutia-campaign-proposal.csv';
+  a.click();
+  showToast('✓ تم تصدير CSV');
+}
+
+function exportPDF() { showToast('جاري إعداد PDF... سيفتح في نافذة جديدة'); setTimeout(()=>window.print(),500); }
+
+function copyAllProposal() {
+  const t = `مقترح حملة توتيا — بناءً على استخبارات المنافسين
+=====================================
+العناوين:
+H1: نظارات أطفال — متخصصون فقط (30✓)
+H2: من يوم الولادة حتى 18 سنة (28✓)
+H3: موزع Nano Vista — حصري لتوتيا (29✓)
+H4: فحص عيون مجاني مع الطبيب (27✓)
+H5: 30,000+ عائلة سعودية تثق بنا (29✓)
+H6: نظارات المواليد — لا تجدها غيرنا (30✓)
+
+الكلمات الحصرية (لا يستهدفها أحد):
+[نظارات اطفال حديثي الولادة]
+[nano vista اطفال]
+[نظارات مواليد]
+
+الميزانية اليومية:
+Google: 200 ر.س | Meta: 150 ر.س | TikTok: 100 ر.س | Snap: 50 ر.س
+إجمالي: 500 ر.س/يوم`;
+  cp(t);
+}
 </script>
 </body>
 </html>
