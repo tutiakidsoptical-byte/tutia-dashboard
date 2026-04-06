@@ -23,8 +23,8 @@
   --tiktok: #010101;
   --snap: #FFFC00;
   --snap-dark: #C8C800;
-  --accent: #5C3CEB;
-  --accent2: #8B6FFF;
+  --accent: #7d5ca0;
+  --accent2: #ba7faf;
   --success: #16A34A;
   --warn: #D97706;
   --danger: #DC2626;
@@ -46,7 +46,7 @@ body {
 .sidebar {
   width: 220px;
   min-height: 100vh;
-  background: var(--ink);
+  background: #7d5ca0;
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -1008,9 +1008,23 @@ tr:hover td { background: var(--surface); }
         <div class="card-hd">
           <div>
             <div class="card-title">📊 تحليل كلود — بيانات حقيقية من Google Sheets</div>
-            <div class="card-sub" id="sheets-count-label">يتم تحميل البيانات...</div>
+            <div class="card-sub" id="sheets-total">يتم تحميل البيانات...</div>
           </div>
-          <button onclick="loadSheetData()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer">↻ تحديث</button>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div style="position:relative">
+              <select id="date-filter-select" onchange="filterByDateSelect(this.value)" style="appearance:none;padding:7px 32px 7px 12px;border-radius:8px;border:1px solid var(--border2);font-size:12px;font-family:'IBM Plex Sans Arabic',sans-serif;color:var(--ink);background:var(--white);cursor:pointer;font-weight:500">
+                <option value="all">كل الفترات</option>
+                <option value="7" selected>آخر 7 أيام</option>
+                <option value="14">آخر 14 يوم</option>
+                <option value="30">آخر 30 يوم</option>
+                <option value="month">هذا الشهر</option>
+                <option value="last_month">الشهر الماضي</option>
+                <option value="90">آخر 3 أشهر</option>
+              </select>
+              <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:12px">▾</span>
+            </div>
+            <button onclick="loadSheetData()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans Arabic',sans-serif">↻ تحديث</button>
+          </div>
         </div>
         <div class="card-body">
           <div id="sheets-analysis">
@@ -1214,40 +1228,81 @@ tr:hover td { background: var(--surface); }
 
 <script>
 // ── GOOGLE SHEETS CONFIG ──
-const SHEET_ID = '1VvlIgfyAsrD8RW6ydnDVhsImGmQ_e1AjelRdkQ-tXG8';
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=0`;
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxXhuMCNY0lvZfc0LddihHqNy_seq069a5ujZnHsJWbnQVSojKH5l9Ndp5ONYsGWEsJ1A/exec';
+
 let sheetData = [];
+let activeDateFilter = 'all';
 
 async function loadSheetData() {
   try {
     const res = await fetch(SHEET_URL);
     const text = await res.text();
-    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
-    const rows = json.table.rows;
-    const cols = json.table.cols.map(c => c.label);
-    
-    sheetData = rows.map(r => {
-      const obj = {};
-      r.c.forEach((cell, i) => { obj[cols[i]] = cell ? cell.v : ''; });
-      return obj;
-    }).filter(r => r.Date || r.Competitor);
-
+    sheetData = JSON.parse(text).filter(r => r.Date || r.Competitor);
     renderSheetData();
     document.querySelector('.last-update').textContent = 'آخر تحديث: ' + new Date().toLocaleString('ar-SA');
     showToast('✓ تم تحميل ' + sheetData.length + ' سجل من Google Sheets');
   } catch(e) {
     console.error('Sheet error:', e);
-    showToast('⚠️ تعذّر تحميل البيانات من Sheets');
+    showToast('⚠️ تعذّر تحميل البيانات');
   }
 }
 
+function filterByDateSelect(value) {
+  activeDateFilter = value;
+  renderSheetData();
+}
+
+function filterByDate(period, el) {
+  activeDateFilter = period;
+  document.querySelectorAll('.date-filter-btn').forEach(b => b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderSheetData();
+}
+
+function getFilteredData() {
+  if (activeDateFilter === 'all') return sheetData;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  
+  if (activeDateFilter === 'month') {
+    return sheetData.filter(row => {
+      if (!row.Date) return true;
+      const d = new Date(row.Date);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+  }
+  if (activeDateFilter === 'last_month') {
+    const lastMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+    const lastMonthYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+    return sheetData.filter(row => {
+      if (!row.Date) return true;
+      const d = new Date(row.Date);
+      return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear;
+    });
+  }
+  const days = parseInt(activeDateFilter) || 999;
+  return sheetData.filter(row => {
+    if (!row.Date) return true;
+    const d = new Date(row.Date);
+    return (now - d) / (1000 * 60 * 60 * 24) <= days;
+  });
+}
+
 function renderSheetData() {
+  const filtered = getFilteredData();
   if (!sheetData.length) return;
+
+  // Update stats
+  document.getElementById('sheets-total') && (document.getElementById('sheets-total').textContent = filtered.length + ' سجل');
 
   // Update analysis page with real data
   const analysisContainer = document.getElementById('sheets-analysis');
   if (analysisContainer) {
-    analysisContainer.innerHTML = sheetData.slice(0, 10).map((row, i) => `
+    if (!filtered.length) {
+      analysisContainer.innerHTML = '<div style="text-align:center;padding:40px;color:var(--ink3)">لا توجد بيانات في هذه الفترة</div>';
+      return;
+    }
+    analysisContainer.innerHTML = filtered.slice(0, 10).map((row, i) => `
       <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <div style="display:flex;align-items:center;gap:8px">
@@ -1268,7 +1323,7 @@ function renderSheetData() {
   // Update ads table with real data
   const tbody = document.getElementById('ads-tbody-sheets');
   if (tbody) {
-    tbody.innerHTML = sheetData.slice(0, 20).map((row, i) => `
+    tbody.innerHTML = filtered.slice(0, 20).map((row, i) => `
       <tr>
         <td style="color:var(--ink4);font-family:'IBM Plex Mono',monospace;font-size:11px">${String(i+1).padStart(2,'0')}</td>
         <td><strong>${row.Competitor || '-'}</strong></td>
@@ -1281,10 +1336,6 @@ function renderSheetData() {
       </tr>
     `).join('');
   }
-
-  // Update stats
-  const totalRecords = sheetData.length;
-  document.getElementById('sheets-count') && (document.getElementById('sheets-count').textContent = totalRecords);
 }
 
 // ── DATA ──
